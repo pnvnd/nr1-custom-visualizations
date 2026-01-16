@@ -2,7 +2,7 @@
     "schemaType": "VISUALIZATION",
     "id": "recharts-simple-bar-chart-timeseries",
     "displayName": "Simple Bar Chart Timeseries",
-    "description": "Made with Recharts, a grouped bar chart for timeseries data",
+    "description": "Made with Recharts, a grouped bar chart for timeseries queries with facets",
     "configuration": [
         {
             "name": "queries",

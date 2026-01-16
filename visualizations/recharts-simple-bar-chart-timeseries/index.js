@@ -14,26 +14,6 @@ export default class SimpleBarChartTimeseriesVisualization extends React.Compone
         ),
     };
 
-    // Function to sort by monthOf or weekdayOf
-    sortByMonthAndYearOrWeekday = (a, b) => {
-        const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const weekdayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
-        // Check if the facet contains a weekday
-        if (weekdayOrder.includes(a) && weekdayOrder.includes(b)) {
-            return weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b);
-        }
-
-        const [aMonth, aYear] = a.split(" ");
-        const [bMonth, bYear] = b.split(" ");
-
-        if (aYear !== bYear) {
-            return parseInt(aYear) - parseInt(bYear);
-        }
-
-        return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
-    };
-
     transformData = (rawData) => {
         const transformedData = [];
         const chartColors = {};
@@ -62,46 +42,139 @@ export default class SimpleBarChartTimeseriesVisualization extends React.Compone
             const { r, g, b } = hexToRgb(hex);
             return rgbToHex(255 - r, 255 - g, 255 - b);
         };
-    
-        // Construct the initial data structure from the raw data
+
+        // Helper function to determine time range and format accordingly
+        const getTimeRangeAndFormat = (timestamps) => {
+            if (timestamps.length === 0) return null;
+
+            const minTime = Math.min(...timestamps);
+            const maxTime = Math.max(...timestamps);
+            const rangeMs = maxTime - minTime;
+
+            const HOUR = 60 * 60 * 1000;
+            const DAY = 24 * HOUR;
+            const WEEK = 7 * DAY;
+            const MONTH = 30 * DAY;
+
+            return {
+                rangeMs,
+                minTime,
+                maxTime,
+                isLessThanHour: rangeMs < HOUR,
+                isLessThanDay: rangeMs < DAY,
+                isLessThanWeek: rangeMs < WEEK,
+                isLessThanMonth: rangeMs < MONTH
+            };
+        };
+
+        // Helper function to format timestamp based on data range
+        const formatTimestamp = (timestamp, timeRange) => {
+            const date = new Date(timestamp);
+
+            if (!timeRange) {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+
+            // Less than 1 hour: show time with seconds
+            if (timeRange.isLessThanHour) {
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+
+            // Less than 1 day: show time without seconds
+            if (timeRange.isLessThanDay) {
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            // Less than 1 week: show day and time
+            if (timeRange.isLessThanWeek) {
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            // Less than 1 month: show month and day
+            if (timeRange.isLessThanMonth) {
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+
+            // More than 1 month: show month, day, and year
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        };
+
+        // First pass: collect all timestamps
+        const allTimestamps = [];
         rawData.forEach(({ metadata, data }) => {
-            //console.log(rawData);
             if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
-                const facet1 = metadata.groups[1].value;
-                const facet2 = metadata.groups[2].value;
-        
-                // Find or create an entry for facet1Value
-                let entry = transformedData.find(e => e.name === facet1);
-                if (!entry) {
-                    entry = { name: facet1 };
-                    transformedData.push(entry);
-                }
-        
-                // Assign the data and color
-                entry[facet2] = data[0].y;
-                chartColors[facet2] = invertColor(metadata.color);
+                data.forEach(({ x }) => {
+                    if (!allTimestamps.includes(x)) {
+                        allTimestamps.push(x);
+                    }
+                });
             }
         });
-    
-        // Sort the transformed data by the 'name' property (alphabetically or by month/year/weekday)
-        const sortedTransformedData = transformedData.sort((a, b) => this.sortByMonthAndYearOrWeekday(a.name, b.name));
 
-        // Extract the keys for the facets across all transformed data
-        const facetKeys = sortedTransformedData
+        const timeRange = getTimeRangeAndFormat(allTimestamps);
+
+        // Process timeseries data with facets
+        // Each series represents a faceted value (e.g., appName)
+        // Each data point in the series represents a timeseries bucket
+        rawData.forEach(({ metadata, data }) => {
+            if (metadata.name !== "Other" && metadata.name !== "Daylight saving time") {
+                const facetName = metadata.groups[1]?.value || 'Value';
+                chartColors[facetName] = invertColor(metadata.color);
+
+                // Iterate through each timeseries data point
+                data.forEach(({ x, y }) => {
+                    const timestamp = formatTimestamp(x, timeRange);
+
+                    // Find or create an entry for this timestamp
+                    let entry = transformedData.find(e => e.name === timestamp && e.timestamp === x);
+                    if (!entry) {
+                        entry = { name: timestamp, timestamp: x };
+                        transformedData.push(entry);
+                    }
+
+                    // Assign the value for this facet
+                    entry[facetName] = y;
+                });
+            }
+        });
+
+        // Sort by timestamp to maintain chronological order
+        transformedData.sort((a, b) => a.timestamp - b.timestamp);
+
+        // Extract unique facet keys
+        const facetKeys = transformedData
             .flatMap(entry => Object.keys(entry))
-            .filter(key => key !== 'name')
-            .sort(this.sortByMonthAndYearOrWeekday);
+            .filter(key => key !== 'name' && key !== 'timestamp');
         const uniqueFacetKeys = Array.from(new Set(facetKeys));
 
-        // As we need to return the yAxisLabel too, let's fetch it here
+        // Get Y-axis label from the first data series
         const yAxisLabel = rawData && rawData.length > 0 && rawData[0].metadata.groups[0].displayName
-        ? rawData[0].metadata.groups[0].displayName
-        : 'Y-Axis'; // Default label if none found
+            ? rawData[0].metadata.groups[0].displayName
+            : 'Y-Axis';
 
         return {
-            data: sortedTransformedData,
+            data: transformedData,
             chartColors,
-            yAxisLabel, // Include this additional field to hold the Y-Axis Label
+            yAxisLabel,
             uniqueFacetKeys
         };
     };
@@ -193,7 +266,7 @@ const EmptyState = () => (
                 An example NRQL query you can try is:
             </HeadingText>
             <code>
-                SELECT average(pageRenderingDuration) FROM PageView FACET userAgentName, countryCode SINCE 1 MONTH AGO
+                SELECT count(*) FROM Transaction FACET appName SINCE 1 week ago LIMIT MAX TIMESERIES 1 day
             </code>
         </CardBody>
     </Card>
