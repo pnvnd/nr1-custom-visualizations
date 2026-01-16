@@ -5,7 +5,7 @@
     "description": "A 100% Stacked Bar Chart made with Plotly",
     "configuration": [
         {
-            "name": "nrqlQueries",
+            "name": "queries",
             "title": "NRQL Queries",
             "type": "collection",
             "items": [
