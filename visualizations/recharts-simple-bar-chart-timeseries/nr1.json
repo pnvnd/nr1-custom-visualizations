@@ -1,0 +1,27 @@
+{
+    "schemaType": "VISUALIZATION",
+    "id": "recharts-simple-bar-chart-timeseries",
+    "displayName": "Simple Bar Chart Timeseries",
+    "description": "Made with Recharts, a grouped bar chart supporting timeseries bucketed queries with facets",
+    "configuration": [
+        {
+            "name": "queries",
+            "title": "NRQL Queries",
+            "type": "collection",
+            "items": [
+                {
+                    "name": "accountId",
+                    "title": "Account ID",
+                    "description": "Account ID to be associated with the query",
+                    "type": "account-id"
+                },
+                {
+                    "name": "query",
+                    "title": "Query",
+                    "description": "NRQL query for visualization",
+                    "type": "nrql"
+                }
+            ]
+        }
+    ]
+}
