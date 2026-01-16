@@ -119,7 +119,7 @@ Made with Recharts, this is a Grouped Bar Chart is used with two FACETs.
 
 ### Simple Bar Chart Timeseries
 Made with Recharts, this is a Grouped Bar Chart that groups by timeseries bucket.
-![Simple Bar Chart](/visualizations/recharts-simple-bar-chart/simple-bar-chart.png)
+![Simple Bar Chart](/visualizations/recharts-simple-bar-chart-timeseries/simple-bar-chart-timeseries.png)
 
 
 ### Treemap
