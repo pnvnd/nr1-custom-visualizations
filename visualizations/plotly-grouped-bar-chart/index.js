@@ -5,7 +5,7 @@ import Plot from 'react-plotly.js';
 
 export default class GroupedBarChartVisualization extends React.Component {
     static propTypes = {
-        nrqlQueries: PropTypes.arrayOf(
+        queries: PropTypes.arrayOf(
             PropTypes.shape({
                 accountId: PropTypes.number,
                 query: PropTypes.string,
@@ -78,9 +78,9 @@ export default class GroupedBarChartVisualization extends React.Component {
     };
 
     render() {
-        const { nrqlQueries } = this.props;
+        const { queries } = this.props;
         
-        if (!nrqlQueries || !nrqlQueries.length || !nrqlQueries[0].accountId || !nrqlQueries[0].query) {
+        if (!queries || !queries.length || !queries[0].accountId || !queries[0].query) {
             return <EmptyState />;
         }
         
@@ -88,8 +88,8 @@ export default class GroupedBarChartVisualization extends React.Component {
             <AutoSizer>
                 {({ width, height }) => (
                     <NrqlQuery
-                        query={nrqlQueries[0].query}
-                        accountId={parseInt(nrqlQueries[0].accountId)}
+                        query={queries[0].query}
+                        accountId={parseInt(queries[0].accountId)}
                         pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
                     >
                         {({ data, loading, error }) => {

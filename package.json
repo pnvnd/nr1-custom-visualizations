@@ -2,7 +2,7 @@
     "private": true,
     "name": "nr1-custom-visualizations",
     "description": "Various custom visualizations",
-    "version": "0.5.6",
+    "version": "0.5.7",
     "scripts": {
         "start": "nr1 nerdpack:serve",
         "test": "exit 0"

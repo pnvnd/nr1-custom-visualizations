@@ -5,7 +5,7 @@
     "description": "Made with Recharts, also known as a grouped bar chart",
     "configuration": [
         {
-            "name": "nrqlQueries",
+            "name": "queries",
             "title": "NRQL Queries",
             "type": "collection",
             "items": [

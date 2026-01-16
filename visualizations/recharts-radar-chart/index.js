@@ -28,7 +28,7 @@ export default class RadarChartVisualization extends React.Component {
          * An array of objects consisting of a nrql `query` and `accountId`.
          * This should be a standard prop for any NRQL based visualizations.
          */
-        nrqlQueries: PropTypes.arrayOf(
+        queries: PropTypes.arrayOf(
             PropTypes.shape({
                 accountId: PropTypes.number,
                 query: PropTypes.string,
@@ -58,13 +58,13 @@ export default class RadarChartVisualization extends React.Component {
     };
 
     render() {
-        const {nrqlQueries, stroke, fill} = this.props;
+        const {queries, stroke, fill} = this.props;
 
         const nrqlQueryPropsAvailable =
-            nrqlQueries &&
-            nrqlQueries[0] &&
-            nrqlQueries[0].accountId &&
-            nrqlQueries[0].query;
+            queries &&
+            queries[0] &&
+            queries[0].accountId &&
+            queries[0].query;
 
         if (!nrqlQueryPropsAvailable) {
             return <EmptyState />;
@@ -74,8 +74,8 @@ export default class RadarChartVisualization extends React.Component {
             <AutoSizer>
                 {({width, height}) => (
                     <NrqlQuery
-                        query={nrqlQueries[0].query}
-                        accountId={parseInt(nrqlQueries[0].accountId)}
+                        query={queries[0].query}
+                        accountId={parseInt(queries[0].accountId)}
                         pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
                     >
                         {({data, loading, error}) => {

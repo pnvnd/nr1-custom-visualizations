@@ -5,7 +5,7 @@
     "description": "A simple cumulative sum chart made with Plotly",
     "configuration": [
         {
-            "name": "nrqlQueries",
+            "name": "queries",
             "title": "NRQL Queries",
             "type": "collection",
             "items": [

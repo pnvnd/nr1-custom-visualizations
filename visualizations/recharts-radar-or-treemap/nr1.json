@@ -21,7 +21,7 @@
       ]
     },
     {
-      "name": "nrqlQueries",
+      "name": "queries",
       "title": "NRQL Queries",
       "type": "collection",
       "items": [

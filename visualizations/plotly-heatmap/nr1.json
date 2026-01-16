@@ -5,7 +5,7 @@
     "description": "A heatmap created with Plotly",
     "configuration": [
         {
-            "name": "nrqlQueries",
+            "name": "queries",
             "title": "NRQL Queries",
             "type": "collection",
             "items": [

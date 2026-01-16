@@ -5,7 +5,7 @@
     "description": "Radar chart visualization",
     "configuration": [
         {
-            "name": "nrqlQueries",
+            "name": "queries",
             "title": "NRQL Queries",
             "type": "collection",
             "items": [
