@@ -116,6 +116,12 @@ The following charts are made with Recharts.
 Made with Recharts, this is a Grouped Bar Chart is used with two FACETs.
 ![Simple Bar Chart](/visualizations/recharts-simple-bar-chart/simple-bar-chart.png)
 
+
+### Simple Bar Chart Timeseries
+Made with Recharts, this is a Grouped Bar Chart that groups by timeseries bucket.
+![Simple Bar Chart](/visualizations/recharts-simple-bar-chart/simple-bar-chart.png)
+
+
 ### Treemap
 Made with Recharts, this Treemap is animated.
 ![Treemap Chart](/visualizations/recharts-radar-or-treemap/treemap-chart.png)
